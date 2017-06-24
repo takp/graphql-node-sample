@@ -2,7 +2,13 @@
 
 const express = require('express')
 const graphqlHTTP = require('express-graphql')
-const { graphql, buildSchema } = require('graphql')
+const {
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLID,
+    GraphQLString,
+    GraphQLBoolean,
+} = require('graphql')
 
 const PORT = process.env.PORT || 3000
 const server = express()
@@ -14,22 +20,45 @@ const server = express()
         watched
  */
 
-const schema = buildSchema(`
-type Video {
-  id: ID,
-  title: String,
-  watched: Boolean,
-}
+const videoType = new GraphQLObjectType({
+    name: 'Video',
+    description: 'video',
+    fields: {
+        id: {
+            type: GraphQLID,
+            description: 'id of video',
+        },
+        title: {
+            type: GraphQLString,
+            description: 'title of video'
+        },
+        watched: {
+            type: GraphQLBoolean,
+            description: 'has watched'
+        }
+    }
+})
 
-type Query {
-  videos: [Video],
-  video: Video,
-}
+const queryType = new GraphQLObjectType({
+    name: 'QueryType',
+    description: 'root query',
+    fields: {
+        video: {
+            type: videoType,
+            resolve: () => new Promise(resolve => {
+                resolve({
+                    id: 1,
+                    title: 'title1',
+                    watched: true,
+                })
+            })
+        }
+    }
+})
 
-type Schema {
-  query: Query,
-}
-`)
+const schema = new GraphQLSchema({
+    query: queryType,
+})
 
 const videoA = {
     id: 1,
@@ -45,34 +74,11 @@ const videoB = {
 
 const videos = [videoA, videoB]
 
-const resolvers = {
-    videos: () => videos,
-    video: () => ({
-        id: () => 1,
-        title: () => 'Movie Title',
-        watched: () => true,
-    })
-}
-
-const query = `
-query myQuery {
-    videos {
-        id,
-        title,
-    },
-}
-`
-
 server.use('/graphql', graphqlHTTP({
     schema,
     graphiql: true,
-    rootValue: resolvers,
 }))
 
 server.listen(PORT, () => {
     console.log('Listening on http://localhost:${PORT}')
 })
-
-// graphql(schema, query, resolvers)
-//     .then(result => console.log(result))
-//     .catch(err => console.log(err))
