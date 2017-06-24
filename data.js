@@ -29,6 +29,7 @@ const createVideo = ({ title }) => {
         title,
         watched,
     }
+    videos.push(video)
     return video
 }
 
