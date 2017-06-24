@@ -1,6 +1,11 @@
 'use strict'
 
+const express = require('express')
+const graphqlHTTP = require('express-graphql')
 const { graphql, buildSchema } = require('graphql')
+
+const PORT = process.env.PORT || 3000
+const server = express()
 
 /*
     video
@@ -58,6 +63,16 @@ query myQuery {
 }
 `
 
-graphql(schema, query, resolvers)
-    .then(result => console.log(result))
-    .catch(err => console.log(err))
+server.use('/graphql', graphqlHTTP({
+    schema,
+    graphiql: true,
+    rootValue: resolvers,
+}))
+
+server.listen(PORT, () => {
+    console.log('Listening on http://localhost:${PORT}')
+})
+
+// graphql(schema, query, resolvers)
+//     .then(result => console.log(result))
+//     .catch(err => console.log(err))
