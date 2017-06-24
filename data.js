@@ -14,9 +14,12 @@ const videoB = {
 
 const videos = [videoA, videoB]
 
+const getVideos = () => new Promise (resolve => resolve(videos))
+
 const getVideoById = (id) => new Promise (resolve => {
     const [video] = videos.filter(v => (v.id + '') === id)
     resolve(video)
 })
 
 exports.getVideoById = getVideoById
+exports.getVideos = getVideos
