@@ -1,10 +1,19 @@
 'use strict'
 
-const {graphql, buildSchema} = require('graphql')
+const { graphql, buildSchema } = require('graphql')
+
+/*
+    video
+        id
+        title
+        watched
+ */
 
 const schema = buildSchema(`
 type Query {
-  foo: String
+  id: ID,
+  title: String,
+  watched: Boolean,
 }
 
 type Schema {
@@ -13,12 +22,16 @@ type Schema {
 `)
 
 const resolvers = {
-            foo: () => 'bar',
-    }
+    id: () => 1,
+    title: () => 'Movie Title',
+    watched: () => true,
+}
 
 const query = `
 query myQuery {
-  foo
+    id,
+    title,
+    watched,
 }
 `
 
